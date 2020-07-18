@@ -419,14 +419,14 @@ summary {
 <h2>Dataset</h2>
 <div id="background" class="section level3">
 <h3>Background</h3>
-<p>Bike-sharing rental process is highly correlated to the environmental and seasonal settings. For instance, weather conditions, precipitation, day of week, season, hour of the day, etc. can affect the rental behaviors. The core data set is related to the two-year historical log corresponding to years 2011 and 2012 from Capital Bikeshare system, Washington D.C., USA which is publicly available in <a href="http://capitalbikeshare.com/system-data" class="uri">http://capitalbikeshare.com/system-data</a>. We aggregated the data on two hourly and daily basis and then extracted and added the corresponding weather and seasonal information. Weather information are extracted from <a href="http://www.freemeteo.com" class="uri">http://www.freemeteo.com</a>.</p>
+<p>Bike-sharing rental process is highly correlated to the environmental and seasonal settings. For instance, weather conditions, precipitation, day of week, season, hour of the day, etc. can affect the rental behaviors. The core data set is related to the two-year historical log corresponding to years 2011 and 2012 from Capital Bikeshare system, Washington D.C., USA which is publicly available in <a href="http://capitalbikeshare.com/system-data" class="uri">http://capitalbikeshare.com/system-data</a>. Our source (see Credit section) aggregated the data on two hourly and daily basis. They extracted and added the corresponding weather and seasonal information. Weather information were extracted from <a href="http://www.freemeteo.com" class="uri">http://www.freemeteo.com</a>.</p>
 </div>
 <div id="description" class="section level3">
 <h3>Description</h3>
-<p>There are two datasaet <code>hour.csv</code> and <code>day.csv</code>. Both dataset have the following fields, except <code>hr</code> which is not available in <code>day.csv</code>. The <code>hour.csv</code> contains bike sharing counts aggregated on hourly basis and it has records of 17379 hours. The <code>day.csv</code> contans bike sharing counts aggregated on daily basis and it has records of 731 days.</p>
+<p>There are two datasets – <code>hour.csv</code> and <code>day.csv</code>. Both datasets have the fields listed below, except <code>hr</code> which is not available in <code>day.csv</code>.The <code>hour.csv</code> contains bike sharing counts aggregated on hourly basis and it has records of 17379 hours. The <code>day.csv</code> contains bike sharing counts aggregated on daily basis and it has records of 731 days.</p>
 <p>The following are the list of attributes:</p>
 <ul>
-<li>instant: record index</li>
+<li>instant : record index</li>
 <li>dteday : date</li>
 <li>season : season (1:winter, 2:spring, 3:summer, 4:fall)</li>
 <li>yr : year (0: 2011, 1:2012)</li>
@@ -443,22 +443,280 @@ summary {
 <li>4: Heavy Rain + Ice Pallets + Thunderstorm + Mist, Snow + Fog</li>
 </ul></li>
 <li>temp : Normalized temperature in Celsius. The values are derived via (t-t_min)/(t_max-t_min), t_min=-8, t_max=+39 (only in hourly scale)</li>
-<li>atemp: Normalized feeling temperature in Celsius. The values are derived via (t-t_min)/(t_max-t_min), t_min=-16, t_max=+50 (only in hourly scale)</li>
-<li>hum: Normalized humidity. The values are divided to 100 (max)</li>
-<li>windspeed: Normalized wind speed. The values are divided to 67 (max)</li>
-<li>casual: count of casual users</li>
-<li>registered: count of registered users</li>
-<li>cnt: count of total rental bikes including both casual and registered</li>
+<li>atemp : Normalized feeling temperature in Celsius. The values are derived via (t-t_min)/(t_max-t_min), t_min=-16, t_max=+50 (only in hourly scale)</li>
+<li>hum : Normalized humidity. The values are divided to 100 (max)</li>
+<li>windspeed : Normalized wind speed. The values are divided to 67 (max)</li>
+<li>casual : count of casual users</li>
+<li>registered : count of registered users</li>
+<li>cnt : count of total rental bikes including both casual and registered</li>
 </ul>
 <hr />
 </div>
 </div>
 <div id="motivation" class="section level2">
 <h2>Motivation</h2>
+<p>We want to have a practical statistical experience with real life dataset and apply techniques learned from STAT420 class. We also want to discover business case that may be supported or answered by the dataset.</p>
 <hr />
 </div>
 <div id="data-snippet" class="section level2">
 <h2>Data Snippet</h2>
+<p>Below is the snippet of data with only first 10 observations.</p>
+<pre class="r"><code>library(readr)
+day_data = read.csv(&quot;dataset/day.csv&quot;)
+knitr::kable(head(day_data)[, 1:15])</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">instant</th>
+<th align="left">dteday</th>
+<th align="right">season</th>
+<th align="right">yr</th>
+<th align="right">mnth</th>
+<th align="right">holiday</th>
+<th align="right">weekday</th>
+<th align="right">workingday</th>
+<th align="right">weathersit</th>
+<th align="right">temp</th>
+<th align="right">atemp</th>
+<th align="right">hum</th>
+<th align="right">windspeed</th>
+<th align="right">casual</th>
+<th align="right">registered</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">2011-01-01</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0.3442</td>
+<td align="right">0.3636</td>
+<td align="right">0.8058</td>
+<td align="right">0.1604</td>
+<td align="right">331</td>
+<td align="right">654</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="left">2011-01-02</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0.3635</td>
+<td align="right">0.3537</td>
+<td align="right">0.6961</td>
+<td align="right">0.2485</td>
+<td align="right">131</td>
+<td align="right">670</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="left">2011-01-03</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0.1964</td>
+<td align="right">0.1894</td>
+<td align="right">0.4373</td>
+<td align="right">0.2483</td>
+<td align="right">120</td>
+<td align="right">1229</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="left">2011-01-04</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0.2000</td>
+<td align="right">0.2121</td>
+<td align="right">0.5904</td>
+<td align="right">0.1603</td>
+<td align="right">108</td>
+<td align="right">1454</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="left">2011-01-05</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0.2270</td>
+<td align="right">0.2293</td>
+<td align="right">0.4370</td>
+<td align="right">0.1869</td>
+<td align="right">82</td>
+<td align="right">1518</td>
+</tr>
+<tr class="even">
+<td align="right">6</td>
+<td align="left">2011-01-06</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0.2043</td>
+<td align="right">0.2332</td>
+<td align="right">0.5183</td>
+<td align="right">0.0896</td>
+<td align="right">88</td>
+<td align="right">1518</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>hour_data = read.csv(&quot;dataset/hour.csv&quot;)
+knitr::kable(head(hour_data)[, 1:15])</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">instant</th>
+<th align="left">dteday</th>
+<th align="right">season</th>
+<th align="right">yr</th>
+<th align="right">mnth</th>
+<th align="right">hr</th>
+<th align="right">holiday</th>
+<th align="right">weekday</th>
+<th align="right">workingday</th>
+<th align="right">weathersit</th>
+<th align="right">temp</th>
+<th align="right">atemp</th>
+<th align="right">hum</th>
+<th align="right">windspeed</th>
+<th align="right">casual</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">2011-01-01</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.24</td>
+<td align="right">0.2879</td>
+<td align="right">0.81</td>
+<td align="right">0.0000</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="left">2011-01-01</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.22</td>
+<td align="right">0.2727</td>
+<td align="right">0.80</td>
+<td align="right">0.0000</td>
+<td align="right">8</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="left">2011-01-01</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.22</td>
+<td align="right">0.2727</td>
+<td align="right">0.80</td>
+<td align="right">0.0000</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="left">2011-01-01</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.24</td>
+<td align="right">0.2879</td>
+<td align="right">0.75</td>
+<td align="right">0.0000</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="left">2011-01-01</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.24</td>
+<td align="right">0.2879</td>
+<td align="right">0.75</td>
+<td align="right">0.0000</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">6</td>
+<td align="left">2011-01-01</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0.24</td>
+<td align="right">0.2576</td>
+<td align="right">0.75</td>
+<td align="right">0.0896</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<hr />
 </div>
 <div id="credit" class="section level2">
 <h2>Credit</h2>

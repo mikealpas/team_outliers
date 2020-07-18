@@ -36,15 +36,15 @@ We propose to create a linear model that can predict bike rental count by hourly
 
 ### Background
 
-Bike-sharing rental process is highly correlated to the environmental and seasonal settings. For instance, weather conditions, precipitation, day of week, season, hour of the day, etc. can affect the rental behaviors. The core data set is related to the two-year historical log corresponding to years 2011 and 2012 from Capital Bikeshare system, Washington D.C., USA which is publicly available in http://capitalbikeshare.com/system-data. We aggregated the data on two hourly and daily basis and then extracted and added the corresponding weather and seasonal information. Weather information are extracted from http://www.freemeteo.com. 
+Bike-sharing rental process is highly correlated to the environmental and seasonal settings. For instance, weather conditions, precipitation, day of week, season, hour of the day, etc. can affect the rental behaviors. The core data set is related to the two-year historical log corresponding to years 2011 and 2012 from Capital Bikeshare system, Washington D.C., USA which is publicly available in http://capitalbikeshare.com/system-data. Our source (see Credit section) aggregated the data on two hourly and daily basis. They extracted and added the corresponding weather and seasonal information. Weather information were extracted from http://www.freemeteo.com. 
 
 ### Description
 
-There are two datasaet `hour.csv` and `day.csv`. Both dataset have the following fields, except `hr` which is not available in `day.csv`. The `hour.csv` contains bike sharing counts aggregated on hourly basis and it has records of 17379 hours. The `day.csv` contans bike sharing counts aggregated on daily basis and it has records of 731 days.
+There are two datasets -- `hour.csv` and `day.csv`. Both datasets have the fields listed below, except `hr` which is not available in `day.csv`.The `hour.csv` contains bike sharing counts aggregated on hourly basis and it has records of 17379 hours. The `day.csv` contains bike sharing counts aggregated on daily basis and it has records of 731 days.
 
 The following are the list of attributes:
 
-- instant: record index
+- instant : record index
 - dteday : date
 - season : season (1:winter, 2:spring, 3:summer, 4:fall)
 - yr : year (0: 2011, 1:2012)
@@ -59,20 +59,35 @@ The following are the list of attributes:
   - 3: Light Snow, Light Rain + Thunderstorm + Scattered clouds, Light Rain + Scattered clouds
   - 4: Heavy Rain + Ice Pallets + Thunderstorm + Mist, Snow + Fog
 - temp : Normalized temperature in Celsius. The values are derived via (t-t_min)/(t_max-t_min), t_min=-8, t_max=+39 (only in hourly scale)
-- atemp: Normalized feeling temperature in Celsius. The values are derived via (t-t_min)/(t_max-t_min), t_min=-16, t_max=+50 (only in hourly scale)
-- hum: Normalized humidity. The values are divided to 100 (max)
-- windspeed: Normalized wind speed. The values are divided to 67 (max)
-- casual: count of casual users
-- registered: count of registered users
-- cnt: count of total rental bikes including both casual and registered
+- atemp : Normalized feeling temperature in Celsius. The values are derived via (t-t_min)/(t_max-t_min), t_min=-16, t_max=+50 (only in hourly scale)
+- hum : Normalized humidity. The values are divided to 100 (max)
+- windspeed : Normalized wind speed. The values are divided to 67 (max)
+- casual : count of casual users
+- registered : count of registered users
+- cnt : count of total rental bikes including both casual and registered
 
 ---
 
 ## Motivation
 
+We want to have a practical statistical experience with real life dataset and apply techniques learned from STAT420 class. We also want to discover business case that may be supported or answered by the dataset.
+
 ---
 
 ## Data Snippet
+
+Below is the snippet of data with only first 10 observations.
+
+```{r}
+library(readr)
+day_data = read.csv("dataset/day.csv")
+knitr::kable(head(day_data)[, 1:15])
+
+hour_data = read.csv("dataset/hour.csv")
+knitr::kable(head(hour_data)[, 1:15])
+```
+
+---
 
 ## Credit
 
