@@ -1,0 +1,82 @@
+---
+title: 'Summer 2020 STAT 420: Data Analysis Project'
+author: "Michael Alpas, Mohit Singh and Upendra Yadav"
+date: "July 19, 2020"
+output:
+  html_document: 
+    theme: readable
+    toc: yes  
+  pdf_document: default
+urlcolor: cyan
+---
+---
+
+```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
+options(scipen = 1, digits = 4, width = 80)
+```
+
+## Team Outliers
+ - Michael Alpas (malpas2)
+ - Mohit Singh (mohits3)
+ - Upendra Singh Yadav (usyadav2)
+ 
+---
+
+## Project Title : Capital Bikeshare Dataset Analysis
+ 
+---
+
+## Proposal:
+
+We propose to create a linear model that can predict bike rental count by hourly or daily based on the environmental and seasonal settings.  This project will incorporate the statistical techniques we learned from STAT 420 - Methods of Applied Statistics such as Data Analysis, Interpretation, Model Building and Model Evaluation.
+
+---
+
+## Dataset 
+
+### Background
+
+Bike-sharing rental process is highly correlated to the environmental and seasonal settings. For instance, weather conditions, precipitation, day of week, season, hour of the day, etc. can affect the rental behaviors. The core data set is related to the two-year historical log corresponding to years 2011 and 2012 from Capital Bikeshare system, Washington D.C., USA which is publicly available in http://capitalbikeshare.com/system-data. We aggregated the data on two hourly and daily basis and then extracted and added the corresponding weather and seasonal information. Weather information are extracted from http://www.freemeteo.com. 
+
+### Description
+
+There are two datasaet `hour.csv` and `day.csv`. Both dataset have the following fields, except `hr` which is not available in `day.csv`. The `hour.csv` contains bike sharing counts aggregated on hourly basis and it has records of 17379 hours. The `day.csv` contans bike sharing counts aggregated on daily basis and it has records of 731 days.
+
+The following are the list of attributes:
+
+- instant: record index
+- dteday : date
+- season : season (1:winter, 2:spring, 3:summer, 4:fall)
+- yr : year (0: 2011, 1:2012)
+- mnth : month ( 1 to 12)
+- hr : hour (0 to 23)
+- holiday : weather day is holiday or not (extracted from [Web Link])
+- weekday : day of the week
+- workingday : if day is neither weekend nor holiday is 1, otherwise is 0.
+- weathersit :
+  - 1: Clear, Few clouds, Partly cloudy, Partly cloudy
+  - 2: Mist + Cloudy, Mist + Broken clouds, Mist + Few clouds, Mist
+  - 3: Light Snow, Light Rain + Thunderstorm + Scattered clouds, Light Rain + Scattered clouds
+  - 4: Heavy Rain + Ice Pallets + Thunderstorm + Mist, Snow + Fog
+- temp : Normalized temperature in Celsius. The values are derived via (t-t_min)/(t_max-t_min), t_min=-8, t_max=+39 (only in hourly scale)
+- atemp: Normalized feeling temperature in Celsius. The values are derived via (t-t_min)/(t_max-t_min), t_min=-16, t_max=+50 (only in hourly scale)
+- hum: Normalized humidity. The values are divided to 100 (max)
+- windspeed: Normalized wind speed. The values are divided to 67 (max)
+- casual: count of casual users
+- registered: count of registered users
+- cnt: count of total rental bikes including both casual and registered
+
+---
+
+## Motivation
+
+---
+
+## Data Snippet
+
+## Credit
+
+[UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)
+
+
+
