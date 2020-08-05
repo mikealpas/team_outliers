@@ -1,0 +1,111 @@
+---
+title: 'Capital Bikeshare Dataset Analysis'
+author: "Michael Alpas, Mohit Singh and Upendra Yadav"
+date: "August 07, 2020"
+output:
+  html_document: 
+    theme: readable
+    toc: yes  
+  pdf_document: default
+urlcolor: cyan
+---
+---
+
+```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
+options(scipen = 1, digits = 4, width = 80)
+```
+
+## Introduction
+
+---
+
+### Overview
+
+For this project, we would like to simulate that Team Outlier is a team of Data Scientists that Capital Bikeshare company hired to come up with data driven answers to help them with their decisions.
+
+The following business questions will be guided by the two-year historical log corresponding to years 2011 and 2012.
+
+ * Capital Bikeshare would like to have a targeted marketing strategy. The Team Outlier need to determine the best season to have marketing promotional offers to increase the number of customers.
+ * The company also need to reduce operational expenses by looking at the manpower needed. Team Outlier will predict the number of people needed during Holidays vs Regular day.
+
+### Description of Dataset
+
+---
+
+### Dataset Source
+
+---
+
+## Methods
+
+---
+
+### Targeted Marketing Strategy Analysis
+#### Loading the Dataset
+
+```{r}
+library(readr)
+day_data = read.csv("dataset/day.csv")
+# knitr::kable(head(day_data)[, 1:15])
+head(day_data)
+
+hour_data = read.csv("dataset/hour.csv")
+# knitr::kable(head(hour_data)[, 1:15])
+head(hour_data)
+```
+
+### Filter the data based on season
+```{r}
+# spring filtered data
+spring_data = subset(day_data, day_data$season == 1)
+
+# summer filtered data
+summer_data = subset(day_data, day_data$season == 2)
+
+# fall filtered data
+fall_data   = subset(day_data, day_data$season == 3)
+
+# winter filtered data
+winter_data = subset(day_data, day_data$season == 4)
+```
+
+### Remove Possible NA
+
+```{r}
+# remove NA
+spring_data = na.omit(spring_data)
+summer_data = na.omit(summer_data)
+summer_data = na.omit(fall_data)
+winter_data = na.omit(winter_data)
+```
+
+### Quick Comparison
+
+let's take a quick look with the filtered data.
+
+```{r}
+# plot to see the difference 
+par(mfrow=c(2,2))
+hist(spring_data$cnt, col = "dodgerblue",border = "darkorange", xlab = "count", main = "Spring Daily Rental Bike Summary")
+hist(summer_data$cnt, col = "dodgerblue",border = "darkorange", xlab = "count", main = "Summer Daily Rental Bike Summary")
+hist(summer_data$cnt, col = "dodgerblue",border = "darkorange", xlab = "count", main = "Fall Daily Rental Bike Summary")
+hist(winter_data$cnt, col = "dodgerblue",border = "darkorange", xlab = "count", main = "Winter Daily Rental Bike Summary")
+
+```
+
+### Operational Expenses Analysis
+
+---
+
+## Results
+
+---
+
+## Discussion
+
+---
+
+## Appendix
+
+---
+
