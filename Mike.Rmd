@@ -15,33 +15,33 @@ urlcolor: cyan
 options(scipen = 1, digits = 4, width = 80)
 ```
 
-## Introduction
+# Introduction
 
 ---
 
-### Overview
+## Overview
 
 For this project, we would like to simulate that Team Outlier is a team of Data Scientists that Capital Bikeshare company hired to come up with data driven answers to help them with their decisions.
 
 The following business questions will be guided by the two-year historical log corresponding to years 2011 and 2012.
 
- * Capital Bikeshare would like to have a targeted marketing strategy. The Team Outlier need to determine the best season to have marketing promotional offers to increase the number of customers.
- * The company also need to reduce operational expenses by looking at the manpower needed. Team Outlier will predict the number of people needed during Holidays vs Regular day.
+ * Capital Bikeshare would like to have a targeted marketing strategy. The Team Outlier need to determine the recommended season to have marketing promotional offers to increase the number of customers.
+ * The company also need to reduce operational expenses by looking at the manpower needed for Holidays and Regular days. Team Outlier will predict the number of people needed during Holidays vs Regular day.
 
-### Description of Dataset
-
----
-
-### Dataset Source
+## Description of Dataset
 
 ---
 
-## Methods
+## Dataset Source
 
 ---
 
-### Targeted Marketing Strategy Analysis
-#### Loading the Dataset
+# Methods
+
+---
+
+## Targeted Marketing Strategy Analysis
+### Loading the Dataset
 
 ```{r}
 library(readr)
@@ -83,7 +83,7 @@ winter_data = na.omit(winter_data)
 
 let's take a quick look with the filtered data.
 
-```{r}
+```{r season_plot, fig.height = 8, fig.width = 10, message=FALSE, warning=FALSE}
 # plot to see the difference 
 par(mfrow=c(2,2))
 hist(spring_data$cnt, col = "dodgerblue",border = "darkorange", xlab = "count", main = "Spring Daily Rental Bike Summary")
@@ -93,19 +93,54 @@ hist(winter_data$cnt, col = "dodgerblue",border = "darkorange", xlab = "count", 
 
 ```
 
-### Operational Expenses Analysis
+### Collinearity Check
+
+We will remove the `instant` and `dteday` variables since these are data reference index and so we can use the `cor()` and `pair()` functions to see what are the predictors that are highly correlated.
+
+```{r}
+day_data_converted = day_data[3:16]
+
+# convert all factor variables to numeric in order to call cor()
+for(name in colnames(day_data_converted)) {
+  if (is.integer(day_data_converted[[name]]))
+    day_data_converted[[name]] = as.numeric(day_data_converted[[name]])
+}
+```
+
+Let's visually check the correlation between the predictors. We would see immediately that there are 2 interesting sets of variables. 1) `temp` and `atemp` 2) `registered` and `cnt`. 
+
+```{r cor_plot, fig.height = 10, fig.width = 10, message=FALSE, warning=FALSE}
+library(faraway)
+pairs(day_data_converted, col = "dodgerblue")
+```
+
+Now, lets check using `cor()` function. We will use cor values > 0.5 to see the predictors that are correlated
+
+```{r}
+all_cor = round(cor(day_data_converted), 2)
+(sig_cor = sort(abs(all_cor["cnt", abs(all_cor["cnt", ]) > 0.5]), decreasing = TRUE)[-1])
+```
+
+Based on the results of `cor()` computation, the above predictors will be helpful to predict the recommended season to run promotional offers to reach company's goal of increasing the number of customers.
+
+### Predictor Selection
+
+TODO: Planning to run AIC/BIC and Selection Procedures
+
+
+## Operational Expenses Analysis
 
 ---
 
-## Results
+# Results
 
 ---
 
-## Discussion
+# Discussion
 
 ---
 
-## Appendix
+# Appendix
 
 ---
 
