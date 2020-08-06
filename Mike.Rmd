@@ -134,8 +134,26 @@ summary(cor_model)$adj.r.squared
 full_day_model = lm(cnt ~ ., data = day_data_converted)
 summary(full_day_model)$adj.r.squared
 
-all.equal(summary(cor_model)$adj.r.squared, summary(full_day_model)$adj.r.squared)
-all.equal(summary(cor_model)$adj.r.squared, summary(full_day_model)$adj.r.squared)
+
+library(knitr)
+library(kableExtra)
+
+comp_results = data.frame(
+  "Correlated Model" = c(
+    "Adjusted R-squared" = summary(cor_model)$adj.r.squared,
+    "R-Squared"          = summary(cor_model)$r.squared
+  ),
+  "Full Model" = c(
+    "Adjusted R-squared" = summary(cor_model)$adj.r.squared,
+    "R-Squared"          = summary(cor_model)$r.squared
+  )
+)
+
+kable(comp_results) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+# all.equal(summary(cor_model)$adj.r.squared, summary(full_day_model)$adj.r.squared)
+# all.equal(summary(cor_model)$adj.r.squared, summary(full_day_model)$adj.r.squared)
 
 ```
 
