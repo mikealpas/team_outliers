@@ -118,14 +118,27 @@ Now, lets check using `cor()` function. We will use cor values > 0.5 to see the 
 
 ```{r}
 all_cor = round(cor(day_data_converted), 2)
-(sig_cor = sort(abs(all_cor["cnt", abs(all_cor["cnt", ]) > 0.5]), decreasing = TRUE)[-1])
+(correlated_predictors = sort(abs(all_cor["cnt", abs(all_cor["cnt", ]) > 0.5]), decreasing = TRUE)[-1])
 ```
 
-Based on the results of `cor()` computation, the above predictors will be helpful to predict the recommended season to run promotional offers to reach company's goal of increasing the number of customers.
+Based on the results of `cor()` computation, the above predictors will be helpful to predict the recommended `season` to run promotional offers to reach company's goal of increasing the number of customers.
 
 ### Predictor Selection
 
-TODO: Planning to run AIC/BIC and Selection Procedures
+We will explore for the best model we can use. First, we build a model based on the significant predictors that have high correlation and also build a full model. Comparing the adjusted $R^2$, both of them have high equal values which means the correlation are reliable.
+
+```{r message=FALSE, warning=FALSE}
+cor_model = lm(cnt ~ registered + casual + temp + atemp + yr, data = day_data_converted)
+summary(cor_model)$adj.r.squared
+
+full_day_model = lm(cnt ~ ., data = day_data_converted)
+summary(full_day_model)$adj.r.squared
+
+all.equal(summary(cor_model)$adj.r.squared, summary(full_day_model)$adj.r.squared)
+all.equal(summary(cor_model)$adj.r.squared, summary(full_day_model)$adj.r.squared)
+
+```
+
 
 
 ## Operational Expenses Analysis
