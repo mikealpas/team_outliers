@@ -27,12 +27,10 @@ The following business questions will be guided by the two-year historical log c
 
  * Capital Bikeshare would like to have a targeted marketing strategy. The Team Outlier need to determine the recommended season to have marketing promotional offers to increase the number of customers.
  * The company also need to reduce operational expenses by looking at the manpower needed for Holidays and Regular days. Team Outlier will predict the number of people needed during Holidays vs Regular day.
+ 
+Bike-sharing rental process is highly correlated to the environmental and seasonal settings. For instance, weather conditions, precipitation, day of week, season, hour of the day, etc. can affect the rental behaviors. The core data set is related to the two-year historical log corresponding to years 2011 and 2012 from [Capital Bikeshare](http://capitalbikeshare.com/system-data) system, Washington D.C., USA which is publicly available. Our source ([UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset)) aggregated the data on two hourly and daily basis. They extracted and added the corresponding weather and seasonal information. Weather information were extracted from http://www.freemeteo.com. 
 
-## Description of Dataset
-
----
-
-## Dataset Source
+There are two datasets -- `hour.csv` and `day.csv`. Both datasets have the same fields except `hr` which is not available in `day.csv`. The `hour.csv` contains bike sharing counts aggregated on hourly basis and it has records of 17379 hours. The `day.csv` contains bike sharing counts aggregated on daily basis and it has records of 731 days.
 
 ---
 
@@ -75,7 +73,7 @@ winter_data = subset(day_data, day_data$season == 4)
 # remove NA
 spring_data = na.omit(spring_data)
 summer_data = na.omit(summer_data)
-summer_data = na.omit(fall_data)
+fall_data = na.omit(fall_data)
 winter_data = na.omit(winter_data)
 ```
 
@@ -125,18 +123,17 @@ Based on the results of `cor()` computation, the above predictors will be helpfu
 
 ### Predictor Selection
 
-We will explore for the best model we can use. First, we build a model based on the significant predictors that have high correlation and also build a full model. Comparing the adjusted $R^2$, both of them have high equal values which means the correlation are reliable.
+We will explore for the best model we can use. First, we build a model based on the significant predictors that have high correlation and also build a full model for comparison. Comparing the Adjusted $R^2$, both of them have high equal values which means the correlation are reliable.
 
 ```{r message=FALSE, warning=FALSE}
+library(knitr)
+library(kableExtra)
+
 cor_model = lm(cnt ~ registered + casual + temp + atemp + yr, data = day_data_converted)
 summary(cor_model)$adj.r.squared
 
 full_day_model = lm(cnt ~ ., data = day_data_converted)
 summary(full_day_model)$adj.r.squared
-
-
-library(knitr)
-library(kableExtra)
 
 comp_results = data.frame(
   "Correlated Model" = c(
@@ -144,19 +141,78 @@ comp_results = data.frame(
     "R-Squared"          = summary(cor_model)$r.squared
   ),
   "Full Model" = c(
-    "Adjusted R-squared" = summary(cor_model)$adj.r.squared,
-    "R-Squared"          = summary(cor_model)$r.squared
+    "Adjusted R-squared" = summary(full_day_model)$adj.r.squared,
+    "R-Squared"          = summary(full_day_model)$r.squared
   )
 )
 
 kable(comp_results) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
-# all.equal(summary(cor_model)$adj.r.squared, summary(full_day_model)$adj.r.squared)
-# all.equal(summary(cor_model)$adj.r.squared, summary(full_day_model)$adj.r.squared)
+```
+
+Both models has good Adjusted $R^2$. However, we want to check if there are predictors that has high **variance inflation factor (VIF)** to quantify the effect of collinearity on the variance of our regression estimates. It is also interesting to compare the VIF of the 2 models.
+
+```{r message=FALSE, warning=FALSE}
+sort(vif(cor_model)[vif(cor_model) > 5], decreasing = TRUE)
+
+sort(vif(full_day_model)[vif(full_day_model) > 5], decreasing = TRUE)
 
 ```
 
+Based on the above comparison, the `atemp` and `temp` are consistent concern for both models because of huge collinearity issue. 
+
+Running an `F-test`, let see what would be the preferred model. We observed through the `F-test` that we prefer the smaller model.
+
+```{r message=FALSE, warning=FALSE}
+anova(cor_model, full_day_model)
+
+```
+
+Let's take the `cor_model` and remove the 2 highest VIF's. Then for the remaining variables, instead checking individually, we will do an exhaustive search.  
+
+```{r message=FALSE, warning=FALSE}
+cor_model_no_high_vif = lm(cnt ~ registered + casual + yr, data = day_data_converted)
+
+library(leaps)
+all_cnt_mod = summary(regsubsets(cnt ~ ., data = day_data_converted, really.big = FALSE))
+best_r2_ind = which.max(all_cnt_mod$adjr2)
+
+# extract the predictor of the model
+all_cnt_mod$which[best_r2_ind, ]
+
+```
+
+We don't think we need to optimize it for `LOOCV RMSE` since **casual** and **registered** predictors has the highest Adjusted $R^2$.
+
+### Compute Prediction Each Season
+
+For computing the mean prediction, we will use the predictors that we identified from the previous process.
+
+```{r}
+best_model = lm(cnt ~ registered + casual, data = day_data)
+spring_pred = mean(predict(best_model, newdata = spring_data, interval = c("prediction"), level = 0.99))
+
+summer_pred = mean(predict(best_model, newdata = summer_data, interval = c("prediction"), level = 0.99))
+
+fall_pred = mean(predict(best_model, newdata = fall_data, interval = c("prediction"), level = 0.99))
+
+winter_pred = mean(predict(best_model, newdata = winter_data, interval = c("prediction"), level = 0.99))
+
+# create table for prediction results
+pred_results = data.frame(
+  "prediction" = c(
+    "Spring" = spring_pred,
+    "Summer" = summer_pred,
+    "Fall"   = fall_pred,
+    "Winter" = winter_pred
+  )
+)
+
+kable(pred_results) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+```
 
 
 ## Operational Expenses Analysis
@@ -165,9 +221,22 @@ kable(comp_results) %>%
 
 # Results
 
+## Targeted Marketing Strategy Analysis
+
+Based on the `F-test`, we observed that we prefer the smaller model we got from checking the collinearity which has the predictors -- **registered**, **casual**, **temp**, **atemp** and **yr** .  From the preferred model, we decided to find the best model by removing the highest `VIF` and we ran exhaustive search to see check every possible model. We ended up using **registered** and **casual** variables to compute the predictions for each season.
+
+## Operational Expenses Analysis
+
 ---
 
 # Discussion
+
+## Targeted Marketing Strategy Analysis
+
+On our preliminary assumption, Winter will be the season that needs an enhanced marketing strategy but it turned out upon finding the model that Spring is the season that would require a better marketing strategy to attract additional customers.
+
+
+## Operational Expenses Analysis
 
 ---
 
