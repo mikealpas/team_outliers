@@ -614,7 +614,7 @@ R-Squared
 ##   Res.Df      RSS Df Sum of Sq F Pr(&gt;F)
 ## 1    725 7.61e-22                      
 ## 2    717 1.75e-21  8 -9.86e-22</code></pre>
-<p>Let’s take the <code>cor_model</code> and remove the 2 highest VIF’s. Then for the remaining variables, instead checking individually, we will do an exhaustive search.</p>
+<p>Let’s take the <code>cor_model</code> and remove the 2 highest VIF’s. Then for the remaining variables, instead checking individually, we will do an Exhaustive Search.</p>
 <pre class="r"><code>cor_model_no_high_vif = lm(cnt ~ registered + casual + yr, data = day_data_converted)
 
 library(leaps)
@@ -720,6 +720,7 @@ Winter
 </div>
 <div id="discussion" class="section level1">
 <h1>Discussion</h1>
+<hr />
 <div id="targeted-marketing-strategy-analysis-2" class="section level2">
 <h2>Targeted Marketing Strategy Analysis</h2>
 <p>On our preliminary assumption, Winter will be the season that would need an enhanced marketing strategy but it turned out upon finding the best model, Spring is the season that would require a better marketing strategy to attract additional customers. Interrogating the best model <code>best_model = lm(cnt ~ registered + casual, data = day_data)</code>, the value of <code>cnt</code> is the sum of <code>registered</code> and <code>casual</code>, which would make that it highly correlated to the response.</p>

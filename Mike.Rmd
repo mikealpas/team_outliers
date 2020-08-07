@@ -169,7 +169,7 @@ anova(cor_model, full_day_model)
 
 ```
 
-Let's take the `cor_model` and remove the 2 highest VIF's. Then for the remaining variables, instead checking individually, we will do an exhaustive search.  
+Let's take the `cor_model` and remove the 2 highest VIF's. Then for the remaining variables, instead checking individually, we will do an Exhaustive Search.  
 
 ```{r message=FALSE, warning=FALSE}
 cor_model_no_high_vif = lm(cnt ~ registered + casual + yr, data = day_data_converted)
@@ -230,6 +230,8 @@ Based on the `F-test`, we observed that we prefer the smaller model we got from 
 ---
 
 # Discussion
+
+---
 
 ## Targeted Marketing Strategy Analysis
 
