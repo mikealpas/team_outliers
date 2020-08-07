@@ -711,7 +711,7 @@ Winter
 <h1>Results</h1>
 <div id="targeted-marketing-strategy-analysis-1" class="section level2">
 <h2>Targeted Marketing Strategy Analysis</h2>
-<p>Based on the <code>F-test</code>, we observed that we prefer the smaller model we got from checking the collinearity which has the predictors – <strong>registered</strong>, <strong>casual</strong>, <strong>temp</strong>, <strong>atemp</strong> and <strong>yr</strong> . From the preferred model, we decided to find the best model by removing the highest <code>VIF</code> and we ran exhaustive search to see check every possible model. We ended up using <strong>registered</strong> and <strong>casual</strong> variables to compute the predictions for each season.</p>
+<p>Based on the <code>F-test</code>, we observed that we prefer the smaller model we got from checking the collinearity which has the predictors – <strong>registered</strong>, <strong>casual</strong>, <strong>temp</strong>, <strong>atemp</strong> and <strong>yr</strong> . From the preferred model, we decided to find the best model by removing the highest <code>VIF</code> and we ran exhaustive search to check every possible model. We ended up using <strong>registered</strong> and <strong>casual</strong> variables to compute the predictions for each season.</p>
 </div>
 <div id="operational-expenses-analysis-1" class="section level2">
 <h2>Operational Expenses Analysis</h2>
@@ -722,7 +722,8 @@ Winter
 <h1>Discussion</h1>
 <div id="targeted-marketing-strategy-analysis-2" class="section level2">
 <h2>Targeted Marketing Strategy Analysis</h2>
-<p>On our preliminary assumption, Winter will be the season that needs an enhanced marketing strategy but it turned out upon finding the model that Spring is the season that would require a better marketing strategy to attract additional customers.</p>
+<p>On our preliminary assumption, Winter will be the season that would need an enhanced marketing strategy but it turned out upon finding the best model, Spring is the season that would require a better marketing strategy to attract additional customers. Interrogating the best model <code>best_model = lm(cnt ~ registered + casual, data = day_data)</code>, the value of <code>cnt</code> is the sum of <code>registered</code> and <code>casual</code>, which would make that it highly correlated to the response.</p>
+<p>If given additional time, we would like to explore why Spring season got the lowest prediction compared to our initial assumption of Winter season. Are there any methods that would lead us to a different best model? Are people biking a lot during Winter because they want the excitement of having snow and cold temperature? It will also interesting to gather data around how often a customer rent a bike, a comparison of registered vs casual bike riders and the type of bicycle – mountain bike, fat bike or road bike.</p>
 </div>
 <div id="operational-expenses-analysis-2" class="section level2">
 <h2>Operational Expenses Analysis</h2>

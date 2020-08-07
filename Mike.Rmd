@@ -223,7 +223,7 @@ kable(pred_results) %>%
 
 ## Targeted Marketing Strategy Analysis
 
-Based on the `F-test`, we observed that we prefer the smaller model we got from checking the collinearity which has the predictors -- **registered**, **casual**, **temp**, **atemp** and **yr** .  From the preferred model, we decided to find the best model by removing the highest `VIF` and we ran exhaustive search to see check every possible model. We ended up using **registered** and **casual** variables to compute the predictions for each season.
+Based on the `F-test`, we observed that we prefer the smaller model we got from checking the collinearity which has the predictors -- **registered**, **casual**, **temp**, **atemp** and **yr** .  From the preferred model, we decided to find the best model by removing the highest `VIF` and we ran exhaustive search to check every possible model. We ended up using **registered** and **casual** variables to compute the predictions for each season.
 
 ## Operational Expenses Analysis
 
@@ -233,7 +233,9 @@ Based on the `F-test`, we observed that we prefer the smaller model we got from 
 
 ## Targeted Marketing Strategy Analysis
 
-On our preliminary assumption, Winter will be the season that needs an enhanced marketing strategy but it turned out upon finding the model that Spring is the season that would require a better marketing strategy to attract additional customers.
+On our preliminary assumption, Winter will be the season that would need an enhanced marketing strategy but it turned out upon finding the best model, Spring is the season that would require a better marketing strategy to attract additional customers. Interrogating the best model `best_model = lm(cnt ~ registered + casual, data = day_data)`, the value of `cnt` is the sum of `registered` and `casual`, which would make that it highly correlated to the response.
+
+If given additional time, we would like to explore why Spring season got the lowest prediction compared to our initial assumption of Winter season. Are there any methods that would lead us to a different best model? Are people biking a lot during Winter because they want the excitement of having snow and cold temperature? It will also interesting to gather data around how often a customer rent a bike, a comparison of registered vs casual bike riders and the type of bicycle -- mountain bike, fat bike or road bike.
 
 
 ## Operational Expenses Analysis
