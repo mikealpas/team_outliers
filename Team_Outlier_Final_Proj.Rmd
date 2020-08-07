@@ -323,7 +323,7 @@ calc_loocv_rmse(bike_mod_all_4) # get the loocv rmse
 
 Removing these outliers resulted in a substantial increase in $R^2$ and a substantial decrease in LOOCV-RMSE.
 
-```{r}
+```{r diag_plot3, fig.height = 6, fig.width = 10, message=FALSE, warning=FALSE}
 par(mfrow = c(2, 2))
 plot(bike_mod_all_4,col = 'dodgerblue') # Create diagnostics
 ```
@@ -355,7 +355,7 @@ calc_loocv_rmse(bike_mod_all_5) # get the loocv rmse
 
 The LOOCV-RMSE has increased, which indicates that the additional terms could have resulted in over fitting the data.
 
-```{r}
+```{r diag_plot4, fig.height = 6, fig.width = 10, message=FALSE, warning=FALSE}
 par(mfrow = c(2, 2))
 plot(bike_mod_all_5,col = 'dodgerblue') # do diagnostics
 length(coef(bike_mod_all_5)) # get the number of params
@@ -387,7 +387,7 @@ calc_loocv_rmse(bike_mod_all_6) # get the loocv rmse
 
 The LOOCV-RMSE also significantly improved, which indicates that this smaller model is a much better model for inference.
 
-```{r r diag_plot3, fig.height = 6, fig.width = 10, message=FALSE, warning=FALSE}
+```{r r diag_plot5, fig.height = 6, fig.width = 10, message=FALSE, warning=FALSE}
 par(mfrow = c(2, 2))
 
 plot(bike_mod_all_6,col = 'dodgerblue') # do diagnostics
@@ -419,7 +419,7 @@ calc_loocv_rmse(bike_mod_all_7) # get the loocv rmse
 
 The LOOCV-RMSE has also increased.
 
-```{r}
+```{r diag_plot6, fig.height = 6, fig.width = 10, message=FALSE, warning=FALSE}
 par(mfrow = c(2, 2))
 plot(bike_mod_all_7,col = 'dodgerblue') # do diagnostics
 ```
@@ -440,7 +440,7 @@ summary(bike_mod_all_8)[["adj.r.squared"]] # get the adjusted r-squared
 
 The adjusted $R^2$ has been lowered by this transformation.
 
-```{r}
+```{r diag_plot7, fig.height = 6, fig.width = 10, message=FALSE, warning=FALSE}
 par(mfrow = c(2, 2))
 plot(bike_mod_all_8,col = 'dodgerblue') # do diagnostics
 ```
@@ -668,7 +668,7 @@ summary(bike_mod_all_11)$coef
 It uses `r length(coef(bike_mod_all_11))` predictors, which is quite a lot, and the p-values for many of them indicate that they may not be significant. However, it appears that the non-significant terms are levels for factor variables which may be difficult to remove.
 
 
-```{r r diag_plot4, fig.height = 6, fig.width = 6, message=FALSE, warning=FALSE}
+```{r diag_plot8, fig.height = 6, fig.width = 6, message=FALSE, warning=FALSE}
 plot(
   bike_mod_all_11$fitted.values,
   data_3$cnt[filter],
@@ -693,7 +693,7 @@ The adjusted $R^2$ indicates that the model explains `r summary(bike_mod_all_11)
 The LOOCV-RMSE of the model is `r calc_loocv_rmse(bike_mod_all_11)`.
 
 
-```{r}
+```{r diag_plot9, fig.height = 6, fig.width = 8, message=FALSE, warning=FALSE}
 par(mfrow = c(2, 2))
 plot(bike_mod_all_11,col = 'dodgerblue') # do diagnostics
 ```
