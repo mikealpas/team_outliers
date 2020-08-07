@@ -239,9 +239,8 @@ Excluding working day had no effect on the $R^2$ of the model, so we can safely 
 Now we will using the Variance Inflation Factor to determine if we have multi-collinearity issues in the model:
 
 ```{r warning=FALSE}
-# install.packages("car")
-library(car)
-car::vif(bike_mod_all_2)
+library(faraway)
+vif(bike_mod_all_2)
 ```
 
 By looking the results of VIF function above, (as we had already suspected by looking to p-value of different variables), temp and atemp have a high level of collinearity. We will now look at the partial correlation coefficient between `temp` and `cnt`:
@@ -560,7 +559,6 @@ for(name in colnames(day_data_converted)) {
 Let us visually check the correlation between the predictors. We would see immediately that there are 2 interesting sets of variables. 1) `temp` and `atemp` 2) `registered` and `cnt`. 
 
 ```{r cor_plot, fig.height = 10, fig.width = 10, message=FALSE, warning=FALSE}
-library(faraway)
 pairs(day_data_converted, col = "dodgerblue")
 ```
 
@@ -709,10 +707,7 @@ The model has an RMSE of 344 which means that on an average the model prediction
 
 ```{r}
 # Count the number of high VIF's in the model
-library(car)
-# car::vif(bike_mod_all_11)
-
-#sum(car::vif(bike_mod_all_11) > 10)
+sum(vif(bike_mod_all_11) > 10)
 ```
 
 This was expected due to high number of categorical variables and their interactions. Since, we are mainly focusing on demand prediction, we tuned our model for better prediction by sacrificing interpretability.
@@ -744,8 +739,6 @@ Based on the `F-test`, we observed that we prefer the smaller model we got from 
 While the final model contained a large number of predictors, making it difficult to interpret. The results indicate that it is very good at explaining the relationship between `weather`, `season` and bike sharing rentals. We tried evaluating using BIC to reduce the size of the final model, however, doing so resulted in a lowered LOOCV-RMSE, so we preferred the AIC selected model.
 
 As expected, the weather situation is an especially important predictor. Both by itself and in its interactions with other predictors, indicating that rain has a significant impact on the number of rentals, especially the interaction between `light rain` and `windspeed`.
-
-We have some concerns about the inclusion of the `year` as a predictor as it may cause problems with using the model for inference on unseen data. While initially it was used as a categorical predictor, we changed it to a numeric predictor in the hopes that it would make the model generalize better to data from the future, should that ever be required. We attempted to model the data excluding `year`, however, the general increasing ridership between the years proved to be an important factor. Future work could incorporate data from additional years to see if this trend continues.
 
 The high adjusted $R^2$ of the model indicates that a very large portion of the variance in the data can be explained by this model, which would make it very useful for predicting demand for bikes.
 
