@@ -766,6 +766,249 @@ If given additional time, we would like to explore why Spring season got the low
 
 # Appendix
 
+### Pairs Plot between different numeric Variables
+```{r pairs_plot}
+#pairs(day_data, col="dodgerblue")
+pairs(day_data[,10:16], 
+      main = "Pairs Plot for Numeric Features",
+      col="dodgerblue"
+      )
+
+```
+
+By looking the pairs plot we can deduce that -
+- there is a relationship between registered users and total ridership count(cnt).
+- there is also a relationship between temp and cnt.
+
+### Correlation between numeric Variables
+```{r correlation}
+cor(day_data[,10:16])
+```
+
+### Distribution of response variable (Bike Ridership Count)
+```{r hist}
+hist(day_data$cnt, 
+     col = "dodgerblue",
+     main = "Histogram of Total Ridership Count",
+     xlab = "Total Ridership Count")
+```
+
+It looks like, the bike ridership count variable is following normal distribution.
+
+### Data Distribution of Numeric Variables
+```{r}
+par(mfrow=c(2,2))
+hist(day_data[,10], main="Temperature", xlab = "Temperature (Celsius)", col = "darkorange")
+hist(day_data[,11], main="ATemp", xlab = "Normalized Temperature", col = "purple")
+hist(day_data[,12], main="Humidity", xlab = "Humidity", col = "blue")
+hist(day_data[,13], main="Windspeed", xlab = "Windspeed", col = "skyblue")
+```
+
+These plots do not exactly looks like normally distributed, however windspeed and humidity looks close to Normal Distribution.
+
+### Data Distribution of Categorical Variables
+
+```{r}
+par(mfrow = c(2,3))
+
+barplot(prop.table(table(day_data$season)), col = 1:4, main = "Distribution of Seasons", xlab = "Season", ylab = "Count")
+
+barplot(prop.table(table(day_data$mnth)), col = 1:12,  main = "Distribution of Months", xlab = "Month", ylab = "Count")
+
+barplot(prop.table(table(day_data$weekday)), col = 1:12,  main = "Distribution of Weekdays", xlab = "Weekday", ylab = "Count")
+
+barplot(prop.table(table(day_data$holiday)), col = 6:12,  main = "Distribution of Holidays", xlab = "Holiday", ylab = "Count")
+
+barplot(prop.table(table(day_data$workingday)), col = 8:12,  main = "Distribution of Working Days", xlab = "Working Day", ylab = "Count")
+
+barplot(prop.table(table(day_data$weathersit)), col = 12:15,  main = "Distribution of Weather Types", xlab = "Weather Type", ylab = "Count")
+```
+
+We can conclude follwing points by seeing the above plots -
+
+- Uniformly Distribution - Seasons, Months, Weekday
+-  Weather seems to be more clear than Mist and Light Precipitation.
+- There are very few holidays.
+- There are more working days compared to Non working days.
+
+
+
+### More Plots (Relationship between Bike Ridership and Temp, Humidity, Windspeed)
+```{r }
+par(mfrow=c(2,2))
+plot(day_data$temp ~ day_data$cnt,
+     data = day_data,
+     main = "Temperature vs Total Bike Ridership", 
+     xlab = "Temperature", 
+     ylab = "Total Bike Ridership", col = 2)
+
+plot(day_data$hum ~ day_data$cnt,
+     data = day_data,
+     main = "Humidity vs Total Bike Ridership",
+     ylab = "Total Bike Ridership",
+     xlab = "Humidity", col = 3)
+
+plot(day_data$windspeed ~ day_data$cnt,
+     data = day_data,
+     main = "Windspeed vs Total Bike Ridership",
+     ylab = "Total Bike Ridership", 
+     xlab = "Windspeed", col = 4)
+
+```
+
+By looking the above plot, it looks like that there is a linear relationship between temperature and total bike ridership, however it could be more polynomial.
+Nothing concretely can be said about the relationship between Humidity and Total Bike Ridership and Windspeed and Total Bike Ridership.
+
+### More Plots (Relationship between Temperature, Humidity, Windspeed)
+
+```{r}
+par(mfrow=c(2,2))
+plot(day_data$windspeed ~day_data$hum, 
+     data = day_data,
+     main = "Windspeed vs Humidity",
+     ylab = "Humidity", 
+     xlab = "Windspeed", col = 5)
+
+plot(day_data$windspeed ~ day_data$temp,
+     data = day_data,
+     main = "Windspeed vs Temperature", 
+     ylab = "Temperature",
+     xlab = "Windspeed", col = 6)
+
+plot(day_data$hum ~ day_data$temp,
+     data = day_data,
+     main = "Humidity vs Temperature", 
+     ylab = "Temperature", 
+     xlab = "Humidity", col = 7)
+```
+
+By looking the above plot, it looks like that there is a some relationship between Windspeed, Humidity and Temperature, it could be in some polynomial in nature, we need to explore more to know the true nature of these relationships.
+
+### Box Plot Insight for Categorical Variables and its impact on ridership count.
+
+```{r }
+par(mfrow = c(1,2))
+boxplot(cnt ~ weathersit, 
+        data = day_data, 
+        col = 2:4, 
+        main = "Count by Weather",
+        xlab = "Weather",
+        ylab = "Total Ridership")
+boxplot(cnt ~ season, 
+        data = day_data,
+        col = 6:12, 
+        main = "Count by Season",
+        xlab = "Season",
+        ylab = "Total Ridership")
+boxplot(cnt ~ mnth, 
+        data = day_data, 
+        col = 2:14, 
+        main = "Count by Month", 
+        xlab = "Months",
+        ylab = "Total Ridership")
+boxplot(cnt ~ weekday, 
+        data = day_data, 
+        col = 2:8,
+        main = "Count by Weekday", 
+        xlab = "Weekday",
+        ylab = "Total Ridership")
+boxplot(cnt ~ workingday, 
+        data = day_data, 
+        col = 10:12, 
+        main = "Count by Working Day", 
+        ylab = "Total Ridership")
+boxplot(cnt ~ holiday, 
+        data = day_data, 
+        col = 12:15, 
+        main = "Count by Holiday",
+        ylab = "Total Ridership")
+```
+
+By seeing the above plots we can deduce that -
+- Total Ridership increases on Clear weather.
+- Total Ridership increases on Summer and Fall weather.
+- Total Ridership incrases on June, July, August and Sepetember.
+- Weekday and Working Day don't offer much interest from boxplot.
+- Mean Ridership on Holidays is lower than on non-Holidays
+
+### Interactions
+
+We will now consider the interactions between the categorical features we identified above and some numerical features.
+
+```{r fig.height=5, fig.width=10}
+par(mfrow = c(1,2))
+
+plot(day_data$temp, day_data$cnt, 
+     col = day_data$season, 
+     pch = 20, 
+     main = "Ridership vs Temperature by Seasons", 
+     xlab = "Temperature", 
+     ylab = "Ridership")
+legend("topleft", legend = c("Spring", "Summer", "Fall", "Winter"),
+       col = 1:5, lwd = 2, lty = c(0,0), pch = 20)
+
+plot(day_data$hum, 
+     day_data$cnt, 
+     col = day_data$season, 
+     pch = 20, 
+     main = "Ridership vs Humidity by Season", 
+     xlab = "Humidity",
+     ylab = "Ridership")
+legend("topleft", legend = c("Spring", "Summer", "Fall", "Winter"),
+       col = 1:5, lwd = 2, lty = c(0,0), pch = 20)
+
+```
+
+As we would expect the temperature to be correlated to the season the Ridership vs Temperature plot doesn't show any interesting patterns. However, the Ridership vs Humidity plot has vertical clusters which could indicate interesting correlations.
+
+```{r fig.height=5, fig.width=10}
+par(mfrow=c(1,2))
+
+plot(day_data$temp, 
+     day_data$cnt, 
+     col = day_data$weathersit, 
+     pch = 20, 
+     main = "Ridership vs Temperature by Weather", 
+     xlab = "Temperature", 
+     ylab = "Ridership")
+legend("topleft", legend = c("Clear", "Misty", "Light Precip"), col = 1:5, lwd = 2, lty = c(0,0), pch = 20)
+
+plot(day_data$hum, 
+     day_data$cnt, 
+     col = day_data$weathersit, 
+     pch = 20, 
+     main = "Ridership vs Humidity by Weather", 
+     xlab = "Humidity", 
+     ylab = "Ridership")
+legend("topleft", legend = c("Clear", "Misty", "Light Precip"), col = 1:5, lwd = 2, lty = c(0,0), pch = 20)
+```
+
+Similarly, as we would expect Humidity to be correlated with Weather the Ridership vs Humidity plot doesn't show any interesting patterns while the Ridership vs Temperature plot indicates that there may be some 
+
+```{r fig.height=5, fig.width=10}
+par(mfrow = c(1,2))
+
+plot(day_data$temp,
+     day_data$cnt, 
+     col = day_data$mnth, 
+     pch = 20, 
+     main = "Ridership vs Temperature by Month",
+     xlab = "Temperature",
+     ylab = "Ridership")
+
+plot(day_data$hum, 
+     day_data$cnt,
+     col = day_data$mnth, 
+     pch = 20, 
+     main = "Ridership vs Humidity by Month", 
+     xlab = "Temp", 
+     ylab = "Ridership")
+legend("topleft", legend = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"), col = 1:12, lwd = 1, lty = c(0,0), pch = 20)
+
+```
+
+It is difficult to draw conclusions from the plots above, however both interaction may merit further investigation.
+
 This report was prepared by Team Outlier -- Michael Alpas, Mohit Singh and Upendra Yadav.
 
 ---
