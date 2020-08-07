@@ -496,6 +496,7 @@ calc_loocv_rmse(bike_mod_all_11) # get the loocv rmse
 
 Finding and removing the observations with high leverage has improved the LOOCV-RMSE and the $R^2$.
 
+
 ## Use Case 2 - Targeted Marketing Strategy Analysis
 
 ```{r}
@@ -569,67 +570,72 @@ all_cor = round(cor(day_data_converted), 2)
 (correlated_predictors = sort(abs(all_cor["cnt", abs(all_cor["cnt", ]) > 0.5]), decreasing = TRUE)[-1])
 ```
 
-Based on the results of `cor()` computation, the above predictors will be helpful to predict the recommended `season` to run promotional offers to reach company's goal of increasing the number of customers.
+Based on the results of `cor()` computation, the above predictors will not be helpful to predict the recommended `season` to run promotional offers to reach company's goal of increasing the number of customers.
+
+```{r}
+#Model after removing collinear variables
+full_car_model = lm(cnt ~ season + mnth + holiday + weekday + workingday + weathersit + hum + windspeed, data = day_data_converted)
+```
+
+
+### Remove influential points
+Now we will remove the influential points if any in the data.
+
+
+```{r}
+#Model without influential points
+without_inf_data = subset(day_data_converted, subset= cooks.distance(full_car_model) <= 4/length(cooks.distance(full_car_model)))
+full_car_model = lm(cnt ~ season + mnth + holiday + weekday + workingday + weathersit + hum + windspeed, data = without_inf_data)
+
+```
 
 ### Predictor Selection
 
-We will explore for the best model we can use. First, we build a model based on the significant predictors that have high correlation and also build a full model for comparison. Comparing the Adjusted $R^2$, both of them have high equal values which means the correlation are reliable.
+We will explore for the best model by using backward search to find that.
 
 ```{r message=FALSE, warning=FALSE}
-library(knitr)
-library(kableExtra)
-cor_model = lm(cnt ~ registered + casual + temp + atemp + yr, data = day_data_converted)
-summary(cor_model)$adj.r.squared
-full_day_model = lm(cnt ~ ., data = day_data_converted)
-summary(full_day_model)$adj.r.squared
-comp_results = data.frame(
-  "Correlated Model" = c(
-    "Adjusted R-squared" = summary(cor_model)$adj.r.squared,
-    "R-Squared"          = summary(cor_model)$r.squared
-  ),
-  "Full Model" = c(
-    "Adjusted R-squared" = summary(full_day_model)$adj.r.squared,
-    "R-Squared"          = summary(full_day_model)$r.squared
-  )
-)
-kable(comp_results) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+#AIC Process
+best_bod_back_aic = step(full_car_model, direction = "backward", trace = 0)
 ```
-
-Both models has good Adjusted $R^2$. However, we want to check if there are predictors that has high **variance inflation factor (VIF)** to quantify the effect of collinearity on the variance of our regression estimates. It is also interesting to compare the VIF of the 2 models.
-
-```{r message=FALSE, warning=FALSE}
-sort(vif(cor_model)[vif(cor_model) > 5], decreasing = TRUE)
-sort(vif(full_day_model)[vif(full_day_model) > 5], decreasing = TRUE)
-```
-
-Based on the above comparison, the `atemp` and `temp` are consistent concern for both models because of huge collinearity issue. 
-
-Running an `F-test`, let see what would be the preferred model. We observed through the `F-test` that we prefer the smaller model.
-
-```{r message=FALSE, warning=FALSE}
-anova(cor_model, full_day_model)
-```
-
-Let's take the `cor_model` and remove the 2 highest VIF's. Then for the remaining variables, instead checking individually, we will do an Exhaustive Search.  
-
-```{r message=FALSE, warning=FALSE}
-cor_model_no_high_vif = lm(cnt ~ registered + casual + yr, data = day_data_converted)
-library(leaps)
-all_cnt_mod = summary(regsubsets(cnt ~ ., data = day_data_converted, really.big = FALSE))
-best_r2_ind = which.max(all_cnt_mod$adjr2)
-# extract the predictor of the model
-all_cnt_mod$which[best_r2_ind, ]
-```
-
-We don't think we need to optimize it for `LOOCV RMSE` since **casual** and **registered** predictors has the highest Adjusted $R^2$.
-
-### Compute Prediction Each Season
-
-For computing the mean prediction, we will use the predictors that we identified from the previous process.
 
 ```{r}
-best_model = lm(cnt ~ registered + casual, data = day_data)
+
+#BIC process
+best_bod_back_bic = step(full_car_model, direction = "backward", k = log(length(resid(full_car_model))), trace = 0)
+```
+
+
+Comparing models selected by AIC and BIC methods
+```{r}
+
+#AIC
+extractAIC(best_bod_back_aic)
+extractAIC(best_bod_back_bic, k = log(length(resid(full_car_model))))
+
+```
+By Seeing the AIC value we are going to select the model searched by backward search AIC method.
+
+
+Test with anova to check the significane of selected model
+```{r}
+anova(best_bod_back_aic, full_car_model)
+```
+
+By Seeing the p-value we failed to reject the null hypothesis so we select the model selected by AIC.
+
+```{r}
+best_model = lm(cnt ~ season + mnth + holiday + weekday + workingday + weathersit + hum + windspeed, data = without_inf_data)
+```
+
+
+
+### Compute Prediction Each Season
+For computing the mean prediction, we will use the predictors that we identified from the previous process.
+
+```{r ,warning=FALSE, message=FALSE}
+library(knitr)
+library(kableExtra)
 spring_pred = mean(predict(best_model, newdata = spring_data, interval = c("prediction"), level = 0.99))
 summer_pred = mean(predict(best_model, newdata = summer_data, interval = c("prediction"), level = 0.99))
 fall_pred = mean(predict(best_model, newdata = fall_data, interval = c("prediction"), level = 0.99))
@@ -647,7 +653,6 @@ kable(pred_results) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
-
 ---
 
 # Results
@@ -656,15 +661,7 @@ kable(pred_results) %>%
 
 ## Use Case 1 - Operational Expenses Analysis
 
-Our best model included both interactions and polynomial terms. 
-
-```{r}
-summary(bike_mod_all_11)$coef
-
-```
-
-It uses `r length(coef(bike_mod_all_11))` predictors, which is quite a lot, and the p-values for many of them indicate that they may not be significant. However, it appears that the non-significant terms are levels for factor variables which may be difficult to remove.
-
+Our best model included both interactions and polynomial terms and by seeing the below plot we can say that the fitted values for this model are quite close to the actual values.
 
 ```{r diag_plot8, fig.height = 6, fig.width = 6, message=FALSE, warning=FALSE}
 plot(
@@ -672,21 +669,20 @@ plot(
   data_3$cnt[filter],
   main = "Fitted Values vs Actual",
   xlab = "Fitted Values",
-  ylab = "Ground Truth",
-  col = "darkblue",
+  ylab = "Actual",
+  col = "darkorange",
   pch = 20
 )
 abline(0, 1, col = "firebrick4", lwd = 3)
 ```
 
-We also observed that the fitted value for this model are quite close to the actual values.
 
 ```{r}
-summary(bike_mod_all_11)$adj.r
+summary(bike_mod_all_11)$r.squared
 
 ```
 
-The adjusted $R^2$ indicates that the model explains `r summary(bike_mod_all_11)$adj.r` of the variance in the data.
+The adjusted $R^2$ indicates that the model explains `r summary(bike_mod_all_11)$r.squared` of the variance in the data.
 
 The LOOCV-RMSE of the model is `r calc_loocv_rmse(bike_mod_all_11)`.
 
@@ -707,7 +703,7 @@ The model has an RMSE of 344 which means that on an average the model prediction
 
 ```{r}
 # Count the number of high VIF's in the model
-sum(vif(bike_mod_all_11) > 10)
+sum(vif(bike_mod_all_11) > 5)
 ```
 
 This was expected due to high number of categorical variables and their interactions. Since, we are mainly focusing on demand prediction, we tuned our model for better prediction by sacrificing interpretability.
@@ -725,7 +721,7 @@ So far, we have tried multiple approaches to evolve our understanding of what sh
 
 ## Use Case 2 - Targeted Marketing Strategy Analysis
 
-Based on the `F-test`, we observed that we prefer the smaller model we got from checking the collinearity which has the predictors -- **registered**, **casual**, **temp**, **atemp** and **yr** .  From the preferred model, we decided to find the best model by removing the highest `VIF` and we ran exhaustive search to check every possible model. We ended up using **registered** and **casual** variables to compute the predictions for each season.
+Based on Collinearity check, we observed that these predictors **registered**, **casual**, **temp**, **atemp** and **yr** will not be helpful in predicting the recommended season to run a targeted marketing strategy.  We created a model without these predictors and ran AIC and BIC comparison. We observed that backward search AIC has better model that can be used as a baseline to explore which season requires marketing strategy.
 
 ---
 
@@ -751,7 +747,7 @@ Future Improvisations:
 
 ## Use Case 2 - Targeted Marketing Strategy Analysis
 
-On our preliminary assumption, Winter will be the season that would need an enhanced marketing strategy but it turned out upon finding the best model, Spring is the season that would require a better marketing strategy to attract additional customers. Interrogating the best model `best_model = lm(cnt ~ registered + casual, data = day_data)`, the value of `cnt` is the sum of `registered` and `casual` bike riders, which make it highly correlated to the response.
+On our preliminary assumption, Winter will be the season that would need an enhanced marketing strategy but it turned out upon finding the best model, Spring is the season that would require a better marketing strategy to attract additional customers. 
 
 If given additional time, we would like to explore why Spring season got the lowest prediction compared to our initial assumption of Winter season. Are there any methods that would lead us to a different best model? Are people biking a lot during Winter because they want the excitement of having snow and cold temperature? It will also be interesting to gather data around how often a customer rents a bike, a comparison of `registered` versus `casual` bike riders, and the type of bicycle -- mountain bike, fat bike, or road bike.
 
